@@ -2,8 +2,7 @@ import logging
 import os
 from typing import List
 
-import yorm
-from yorm.types import SortedList, String
+
 
 from .. import common, exceptions, shell
 from .group import Group
