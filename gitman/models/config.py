@@ -122,7 +122,7 @@ class Config(yorm.ModelMixin):
             common.newline()
             count += 1
 
-            config = load_config(search=False)
+            config = load_config(search=False, parent=self.location_path)
             if config:
                 common.indent()
                 count += config.install_dependencies(
@@ -164,7 +164,7 @@ class Config(yorm.ModelMixin):
                 source.run_scripts(force=force)
                 count += 1
 
-                config = load_config(search=False)
+                config = load_config(search=False, parent=self.location_path)
                 if config:
                     common.indent()
                     count += config.run_scripts(
@@ -266,7 +266,7 @@ class Config(yorm.ModelMixin):
 
             yield source.identify(allow_dirty=allow_dirty)
 
-            config = load_config(search=False)
+            config = load_config(search=False, parent=self.location_path)
             if config:
                 common.indent()
                 yield from config.get_dependencies(
@@ -327,7 +327,7 @@ class Config(yorm.ModelMixin):
         return sources_filter
 
 
-def load_config(start=None, *, search=True):
+def load_config(start=None, *, search=True, parent=None):
     """Load the config for the current project."""
     if start:
         start = os.path.abspath(start)
@@ -342,6 +342,8 @@ def load_config(start=None, *, search=True):
         log.debug("Looking for config in: %s", path)
 
         for filename in os.listdir(path):
+            if path == parent:
+                continue
             if _valid_filename(filename):
                 config = Config(path, filename)
                 config._on_post_load()  # pylint: disable=protected-access
