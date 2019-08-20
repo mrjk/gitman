@@ -64,7 +64,12 @@ class Config(yorm.ModelMixin):
     @property
     def location_path(self):
         """Get the full path to the dependency storage location."""
-        return os.path.normpath(os.path.join(self.root, self.location))
+        location_path = os.path.normpath(os.path.join(self.root, self.location))
+        if not os.path.exists(location_path):
+            os.mkdir(location_path)
+            log.debug(f"Created location directory: {location_path}")
+        return location_path
+
 
     def get_path(self, name=None):
         """Get the full path to a dependency or internal file."""
